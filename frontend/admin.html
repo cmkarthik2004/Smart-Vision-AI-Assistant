@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<title>Admin Dashboard | Smart Vision AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #04080f;
+  --surface:  #070e1a;
+  --card:     #0a1525;
+  --border:   rgba(0,220,130,0.18);
+  --border2:  rgba(0,180,255,0.14);
+  --accent:   #00dc82;
+  --accent2:  #00b4ff;
+  --danger:   #ff4560;
+  --warn:     #f59e0b;
+  --text:     #dff0e8;
+  --dim:      #5a7a68;
+  --mono:     'JetBrains Mono', monospace;
+  --sans:     'Syne', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  background: var(--bg);
+  font-family: var(--sans);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID BG ───────────────────────────── */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,220,130,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,220,130,.03) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events:none; z-index:0;
+}
+
+/* ── SCANLINE ──────────────────────────── */
+body::after {
+  content:'';
+  position:fixed;inset:0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.08) 2px,
+    rgba(0,0,0,.08) 4px
+  );
+  pointer-events:none; z-index:0;
+}
+
+.wrap { position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:28px 24px; }
+
+/* ── TOP BAR ───────────────────────────── */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:36px; flex-wrap:wrap; gap:14px;
+}
+.brand {
+  display:flex; align-items:center; gap:14px;
+}
+.brand-orb {
+  width:46px; height:46px; border-radius:14px;
+  background: linear-gradient(135deg, #00dc82 0%, #00b4ff 100%);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-weight:600; font-size:14px; color:#04080f;
+  box-shadow: 0 0 24px rgba(0,220,130,.35);
+  animation: orbPulse 3s ease-in-out infinite;
+}
+@keyframes orbPulse {
+  0%,100%{ box-shadow:0 0 24px rgba(0,220,130,.35); }
+  50%{ box-shadow:0 0 40px rgba(0,220,130,.6); }
+}
+.brand-text h1 { font-size:20px; font-weight:800; letter-spacing:-.3px; }
+.brand-text p { font-size:10px; font-family:var(--mono); color:var(--dim); letter-spacing:2px; margin-top:1px; }
+
+.topbar-right { display:flex; gap:10px; align-items:center; }
+.badge-admin {
+  background: rgba(0,220,130,.1); border:1px solid rgba(0,220,130,.3);
+  border-radius:20px; padding:5px 13px;
+  font-family:var(--mono); font-size:11px; color:var(--accent);
+  display:flex; align-items:center; gap:6px;
+}
+.badge-admin::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); animation:blink 1.4s infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+.btn-logout {
+  background: rgba(255,69,96,.1); border:1px solid rgba(255,69,96,.3);
+  border-radius:20px; padding:6px 16px;
+  font-family:var(--sans); font-size:12px; font-weight:600; color:var(--danger);
+  cursor:pointer; transition:.15s;
+}
+.btn-logout:hover { background:rgba(255,69,96,.2); }
+
+/* ── STAT STRIP ────────────────────────── */
+.stat-strip {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+  margin-bottom:28px;
+}
+.stat {
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:20px 22px;
+  position:relative; overflow:hidden;
+  transition:.2s;
+}
+.stat:hover { border-color:var(--accent); transform:translateY(-2px); }
+.stat::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse at top left, rgba(0,220,130,.06) 0%, transparent 70%);
+  pointer-events:none;
+}
+.stat-icon {
+  font-size:22px; margin-bottom:10px;
+}
+.stat-val {
+  font-family:var(--mono); font-size:36px; font-weight:600;
+  color:var(--accent); line-height:1;
+}
+.stat-val.blue { color:var(--accent2); }
+.stat-val.warn { color:var(--warn); }
+.stat-lbl {
+  font-size:10px; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--dim); margin-top:5px; font-family:var(--mono);
+}
+
+/* ── SECTION CARD ──────────────────────── */
+.card {
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:22px;
+  padding:22px 24px;
+  margin-bottom:22px;
+}
+.card-head {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:18px; gap:12px; flex-wrap:wrap;
+}
+.card-title {
+  font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;
+}
+.card-title span { font-size:16px; }
+
+/* ── TABLE ─────────────────────────────── */
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead tr { border-bottom: 1px solid rgba(255,255,255,.07); }
+th {
+  text-align:left; padding:10px 10px;
+  font-family:var(--mono); font-size:10px; letter-spacing:1.5px;
+  color:var(--dim); font-weight:500; text-transform:uppercase;
+}
+td { padding:12px 10px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+tr:hover td { background:rgba(0,220,130,.03); }
+tr:last-child td { border-bottom:none; }
+
+.uid {
+  font-family:var(--mono); font-size:12px; color:var(--accent2);
+  background:rgba(0,180,255,.08); padding:2px 8px; border-radius:6px;
+}
+.uname { font-weight:600; font-size:13px; }
+.date-cell { font-family:var(--mono); font-size:11px; color:var(--dim); }
+
+.pill-active {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(0,220,130,.1); border:1px solid rgba(0,220,130,.25);
+  border-radius:20px; padding:3px 10px; font-size:11px; color:var(--accent);
+  font-family:var(--mono);
+}
+.pill-active::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--accent); animation:blink 1.4s infinite; }
+.pill-offline {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  border-radius:20px; padding:3px 10px; font-size:11px; color:var(--dim);
+  font-family:var(--mono);
+}
+
+.btn-del {
+  background:none; border:1px solid rgba(255,69,96,.3);
+  border-radius:16px; padding:4px 13px;
+  font-size:11px; color:var(--danger); cursor:pointer;
+  font-family:var(--sans); font-weight:600; transition:.12s;
+}
+.btn-del:hover { background:rgba(255,69,96,.15); border-color:var(--danger); }
+
+/* ── LOGS ──────────────────────────────── */
+.log-filters {
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+}
+.log-filters select {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:20px; padding:6px 14px;
+  color:var(--text); font-family:var(--mono); font-size:12px; cursor:pointer;
+  outline:none;
+}
+.log-filters select:focus { border-color:var(--accent); }
+
+.btn-refresh {
+  background:rgba(0,220,130,.1); border:1px solid rgba(0,220,130,.25);
+  border-radius:20px; padding:6px 14px;
+  font-family:var(--mono); font-size:12px; color:var(--accent);
+  cursor:pointer; transition:.12s;
+}
+.btn-refresh:hover { background:rgba(0,220,130,.2); }
+
+.log-scroll { max-height:360px; overflow-y:auto; margin-top:10px; }
+.log-scroll::-webkit-scrollbar { width:4px; }
+.log-scroll::-webkit-scrollbar-track { background:transparent; }
+.log-scroll::-webkit-scrollbar-thumb { background:rgba(0,220,130,.2); border-radius:4px; }
+
+.log-tag {
+  display:inline-block; padding:2px 8px; border-radius:8px;
+  font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.tag-login    { background:rgba(0,180,255,.12); color:var(--accent2); }
+.tag-failed   { background:rgba(255,69,96,.12);  color:var(--danger); }
+.tag-error    { background:rgba(245,158,11,.12); color:var(--warn); }
+.tag-detect   { background:rgba(0,220,130,.12);  color:var(--accent); }
+.tag-default  { background:rgba(255,255,255,.06); color:var(--dim); }
+
+.detail-cell {
+  max-width:320px; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; font-size:12px; color:var(--dim);
+}
+.ip-cell { font-family:var(--mono); font-size:11px; color:var(--dim); }
+
+/* ── EMPTY STATE ───────────────────────── */
+.empty-state {
+  text-align:center; padding:48px 20px; color:var(--dim);
+}
+.empty-state .e-icon { font-size:36px; margin-bottom:10px; }
+.empty-state p { font-size:13px; font-family:var(--mono); }
+
+/* ── LOADING SHIMMER ───────────────────── */
+.shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,.04) 25%, rgba(255,255,255,.08) 50%, rgba(255,255,255,.04) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:6px; height:14px; width:100%; display:block;
+}
+@keyframes shimmer { to{background-position:-200% 0;} }
+
+/* ── RESPONSIVE ────────────────────────── */
+@media(max-width:680px){
+  .stat-strip{ grid-template-columns:1fr 1fr; }
+  .stat-strip .stat:last-child{ grid-column:1/-1; }
+  .wrap{ padding:16px 14px; }
+  .detail-cell{ max-width:140px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-orb">SV</div>
+      <div class="brand-text">
+        <h1>Smart Vision</h1>
+        <p>ADMIN CONTROL PANEL</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="badge-admin" id="adminName">ADMIN</div>
+      <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-strip">
+    <div class="stat">
+      <div class="stat-icon">👥</div>
+      <div class="stat-val" id="totalUsers"><span class="shimmer" style="width:60px;height:36px;display:inline-block"></span></div>
+      <div class="stat-lbl">Total Users</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">🟢</div>
+      <div class="stat-val blue" id="activeNow"><span class="shimmer" style="width:60px;height:36px;display:inline-block"></span></div>
+      <div class="stat-lbl">Active Sessions</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">📋</div>
+      <div class="stat-val warn" id="logEntriesCount"><span class="shimmer" style="width:60px;height:36px;display:inline-block"></span></div>
+      <div class="stat-lbl">Log Entries</div>
+    </div>
+  </div>
+
+  <!-- USERS TABLE -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><span>👤</span> All Users</div>
+      <button class="btn-refresh" onclick="fetchUsers()">↻ Refresh</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Username</th>
+            <th>Registered</th>
+            <th>Last Login</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="usersTbody">
+          <tr><td colspan="6"><div class="shimmer" style="margin:8px 0"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LOGS TABLE -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><span>📡</span> System Logs</div>
+      <div class="log-filters">
+        <select id="logTypeFilter">
+          <option value="">All Types</option>
+          <option value="login_attempt">Login Attempts</option>
+          <option value="failed_login">Failed Logins</option>
+          <option value="api_error">API Errors</option>
+          <option value="detection_failure">Detection Failures</option>
+        </select>
+        <button class="btn-refresh" id="refreshLogsBtn">↻ Refresh</button>
+      </div>
+    </div>
+    <div class="log-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Type</th>
+            <th>User</th>
+            <th>Details</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody id="logsTbody">
+          <tr><td colspan="5"><div class="shimmer" style="margin:8px 0"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+const API = '';
+let adminToken = localStorage.getItem('admin_token');
+
+function authH() {
+  return { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' };
+}
+
+function esc(s) {
+  return String(s||'').replace(/[&<>"']/g, m =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function logTag(type) {
+  const map = {
+    login_attempt: ['tag-login','LOGIN'],
+    failed_login:  ['tag-failed','FAIL'],
+    api_error:     ['tag-error','ERROR'],
+    detection_failure: ['tag-detect','DETECT'],
+  };
+  const [cls, label] = map[type] || ['tag-default', type.replace(/_/g,' ').toUpperCase()];
+  return `<span class="log-tag ${cls}">${label}</span>`;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+function fmtDateTime(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+
+async function fetchStats() {
+  try {
+    const res = await fetch('/api/admin/stats', { headers: authH() });
+    if (res.status === 401) { doLogout(); return; }
+    const data = await res.json();
+    document.getElementById('totalUsers').textContent = data.total_users ?? '—';
+    document.getElementById('activeNow').textContent  = data.active_now  ?? '—';
+  } catch { document.getElementById('totalUsers').textContent = 'Err'; }
+}
+
+async function fetchUsers() {
+  try {
+    const res = await fetch('/api/admin/users', { headers: authH() });
+    if (!res.ok) return;
+    const users = await res.json();
+    const tbody = document.getElementById('usersTbody');
+    if (!users.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="e-icon">👤</div><p>No users registered yet</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td><span class="uid">${esc(u.user_id)}</span></td>
+        <td><span class="uname">${esc(u.username)}</span></td>
+        <td class="date-cell">${fmtDate(u.created_at)}</td>
+        <td class="date-cell">${u.last_login ? fmtDateTime(u.last_login) : '<span style="color:var(--dim)">Never</span>'}</td>
+        <td>${u.is_active
+          ? '<span class="pill-active">Online</span>'
+          : '<span class="pill-offline">Offline</span>'}</td>
+        <td><button class="btn-del" data-user="${esc(u.user_id)}">Delete</button></td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('.btn-del').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const uid = btn.getAttribute('data-user');
+        if (!confirm(`Delete user "${uid}"? This cannot be undone.`)) return;
+        const r = await fetch(`/api/admin/users/${uid}`, { method:'DELETE', headers: authH() });
+        if (r.ok) { fetchUsers(); fetchStats(); }
+        else alert('Delete failed — check console.');
+      });
+    });
+  } catch(e) { console.error(e); }
+}
+
+async function fetchLogs() {
+  try {
+    const type = document.getElementById('logTypeFilter').value;
+    let url = '/api/admin/logs?limit=150';
+    if (type) url += `&type=${type}`;
+    const res = await fetch(url, { headers: authH() });
+    if (!res.ok) return;
+    const logs = await res.json();
+    const tbody = document.getElementById('logsTbody');
+    document.getElementById('logEntriesCount').textContent = logs.length;
+    if (!logs.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="e-icon">📭</div><p>No logs found</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = logs.map(l => `
+      <tr>
+        <td class="date-cell" style="white-space:nowrap">${fmtDateTime(l.created_at)}</td>
+        <td>${logTag(l.log_type)}</td>
+        <td><span class="uid" style="font-size:11px">${esc(l.user_id || 'system')}</span></td>
+        <td class="detail-cell" title="${esc(l.details)}">${esc(l.details || '—')}</td>
+        <td class="ip-cell">${esc(l.ip || '—')}</td>
+      </tr>
+    `).join('');
+  } catch(e) { console.error(e); }
+}
+
+function doLogout() {
+  localStorage.removeItem('admin_token');
+  window.location.href = '/adminlogin.html';
+}
+
+document.getElementById('logoutBtn').addEventListener('click', doLogout);
+document.getElementById('refreshLogsBtn').addEventListener('click', fetchLogs);
+document.getElementById('logTypeFilter').addEventListener('change', fetchLogs);
+
+// Set admin name badge
+const adminUser = localStorage.getItem('admin_username');
+if (adminUser) document.getElementById('adminName').textContent = adminUser.toUpperCase();
+
+(async function init() {
+  if (!adminToken) { doLogout(); return; }
+  await Promise.all([fetchStats(), fetchUsers(), fetchLogs()]);
+})();
+</script>
+</body>
+</html>

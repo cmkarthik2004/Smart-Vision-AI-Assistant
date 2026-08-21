@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Smart Vision AI – Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Exo 2',sans-serif;background:#0d0b14;color:#c8e0f4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.bg{position:fixed;inset:0;background-image:linear-gradient(rgba(168,85,247,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.wrap{position:relative;z-index:1;width:100%;max-width:420px}
+
+/* LOGO */
+.logo{text-align:center;margin-bottom:28px}
+.orb{position:relative;width:70px;height:70px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center}
+.orb-ring{position:absolute;border-radius:50%;border:1px solid #a855f7;opacity:.4;animation:spin linear infinite}
+.r1{width:70px;height:70px;animation-duration:4s}
+.r2{width:48px;height:48px;animation-duration:6s;animation-direction:reverse}
+.r3{width:28px;height:28px;animation-duration:3s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.orb-core{font-family:'Share Tech Mono',monospace;font-size:15px;font-weight:bold;color:#00d4ff;text-shadow:0 0 12px #00d4ff;z-index:1}
+.logo h1{font-size:1.7rem;font-weight:900;color:#e8f4ff}
+.logo h1 span{color:#00d4ff;text-shadow:0 0 14px #00d4ff}
+.logo p{font-size:10px;color:#a78bcc;font-family:'Share Tech Mono',monospace;letter-spacing:2px;margin-top:4px}
+
+/* CARD */
+.card{background:rgba(10,22,42,.92);border:1px solid rgba(0,212,255,.2);border-radius:14px;padding:28px 24px;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid rgba(168,85,247,0.2);margin-bottom:22px}
+.tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:#a78bcc;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;font-family:'Exo 2',sans-serif}
+.tab.active{color:#00d4ff; border-color:#a855f7}
+
+/* FORM */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;color:#a78bcc;margin-bottom:5px;font-family:'Share Tech Mono',monospace;letter-spacing:.8px;text-transform:uppercase}
+.field input{width:100%;padding:11px 13px;background:rgba(255,255,255,.05);border:1px solid rgba(168,85,247,0.22);border-radius:9px;color:#e8f4ff;font-family:'Exo 2',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+.field input:focus{ border-color:#a855f7;box-shadow:0 0 10px rgba(0,212,255,.15)}
+.field input::placeholder{color:#a78bcc}
+
+.btn-main{width:100%;padding:12px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;margin-top:4px;transition:all .2s}
+.btn-main:hover{box-shadow:0 0 24px rgba(168,85,247,0.6)}
+.btn-main:disabled{opacity:.5;cursor:not-allowed}
+
+/* MESSAGES */
+.msg{padding:10px 13px;border-radius:9px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5}
+.msg.show{display:block}
+.msg.err{background:rgba(255,60,94,.12);border:1px solid rgba(255,60,94,.3);color:#ff7a99}
+.msg.ok{background:rgba(0,255,157,.1);border:1px solid rgba(0,255,157,.3);color:#00ff9d}
+
+/* HINT */
+.id-hint{background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.2);border-radius:8px;padding:7px 11px;margin-top:5px;font-size:11px;color:#00ff9d;font-family:'Share Tech Mono',monospace;display:none}
+
+/* FEATURES */
+.feats{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+.feat{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:8px;padding:5px 11px;font-size:11px;color:#a78bcc}
+
+
+
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="wrap">
+  <div class="logo">
+    <div class="orb">
+      <span class="orb-ring r1"></span>
+      <span class="orb-ring r2"></span>
+      <span class="orb-ring r3"></span>
+      <span class="orb-core">AI</span>
+    </div>
+    <h1>Smart Vision <span>Assistant</span></h1>
+    <p>NEURAL DETECTION · MULTILINGUAL · REAL-TIME</p>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" id="tabLogin" onclick="show('login')">Login</button>
+      <button class="tab"        id="tabReg"   onclick="show('register')">Register</button>
+    </div>
+
+    <div class="msg err" id="msgErr"></div>
+    <div class="msg ok"  id="msgOk"></div>
+
+    <!-- LOGIN -->
+    <div id="formLogin">
+      <div class="field">
+        <label>Username or User ID</label>
+        <input type="text" id="loginId" placeholder="e.g. Kavya or Kavya@2005" autocomplete="username"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPw" placeholder="Your password" autocomplete="current-password"/>
+      </div>
+      <button class="btn-main" id="loginBtn" onclick="doLogin()">🔐 Login</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="formReg" style="display:none">
+      <div class="field">
+        <label>User ID (used to login)</label>
+        <input type="text" id="regId" placeholder="e.g. karthik2025" oninput="showHint()"/>
+        <div class="id-hint" id="idHint">✓ You will login with this ID</div>
+      </div>
+      <div class="field">
+        <label>Username (display name)</label>
+        <input type="text" id="regName" placeholder="e.g. Karthik"/>
+      </div>
+      <div class="field">
+        <label>Password (min 6 characters)</label>
+        <input type="password" id="regPw" placeholder="Create a password" autocomplete="new-password"/>
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <input type="password" id="regPw2" placeholder="Repeat password" autocomplete="new-password"/>
+      </div>
+      <button class="btn-main" id="regBtn" onclick="doRegister()">🚀 Create Account</button>
+    </div>
+  </div>
+
+  <div class="feats">
+    <span class="feat">🎯 80+ Objects</span>
+    <span class="feat">🎨 Colour ID</span>
+    <span class="feat">📏 Distance</span>
+    <span class="feat">🌐 3 Languages</span>
+    <span class="feat">🎤 Voice</span>
+    <span class="feat">💾 Gallery</span>
+    <span class="feat">🔄 AI Learning</span>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+
+// Already logged in? Go straight to app
+if (localStorage.getItem('sv_token')) window.location.href = '/app';
+
+function show(tab) {
+  document.getElementById('formLogin').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('formReg').style.display   = tab==='register' ? 'block' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabReg').classList.toggle('active', tab==='register');
+  clearMsg();
+}
+
+function showHint() {
+  const v = document.getElementById('regId').value.trim();
+  document.getElementById('idHint').style.display = v.length >= 3 ? 'block' : 'none';
+}
+
+function err(m)  { const e=document.getElementById('msgErr'); e.textContent=m; e.className='msg err show'; document.getElementById('msgOk').className='msg ok'; }
+function ok(m)   { const e=document.getElementById('msgOk');  e.textContent=m; e.className='msg ok show';  document.getElementById('msgErr').className='msg err'; }
+function clearMsg() { document.getElementById('msgErr').className='msg err'; document.getElementById('msgOk').className='msg ok'; }
+
+async function doLogin() {
+  clearMsg();
+  const identifier = document.getElementById('loginId').value.trim();
+  const password   = document.getElementById('loginPw').value;
+  if (!identifier || !password) { err('Please fill in all fields'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled=true; btn.textContent='Logging in…';
+  try {
+    const r = await fetch(API+'/api/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({identifier, password})
+    });
+    const d = await r.json();
+    if (d.ok) {
+      localStorage.setItem('sv_token', d.token);
+      localStorage.setItem('sv_user', JSON.stringify({user_id:d.user_id, username:d.username}));
+      ok('Welcome, '+d.username+'! Loading app…');
+      setTimeout(() => window.location.href='/app', 700);
+    } else {
+      err(d.error || 'Login failed. Check your credentials.');
+    }
+  } catch { err('Cannot connect to server. Is Flask running?'); }
+  btn.disabled=false; btn.textContent='🔐 Login';
+}
+
+async function doRegister() {
+  clearMsg();
+  const user_id  = document.getElementById('regId').value.trim();
+  const username = document.getElementById('regName').value.trim();
+  const password = document.getElementById('regPw').value;
+  const confirm  = document.getElementById('regPw2').value;
+  if (!user_id || !username || !password) { err('All fields are required'); return; }
+  if (password !== confirm) { err('Passwords do not match'); return; }
+  if (password.length < 6)  { err('Password must be at least 6 characters'); return; }
+  const btn = document.getElementById('regBtn');
+  btn.disabled=true; btn.textContent='Creating account…';
+  try {
+    const r = await fetch(API+'/api/auth/register', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({user_id, username, password})
+    });
+    const d = await r.json();
+    if (d.ok) {
+      ok('Account created! Your ID: '+d.user_id+' — Please login now.');
+      setTimeout(() => show('login'), 2000);
+    } else {
+      err(d.error || 'Registration failed');
+    }
+  } catch { err('Cannot connect to server. Is Flask running?'); }
+  btn.disabled=false; btn.textContent='🚀 Create Account';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const isLogin = document.getElementById('formLogin').style.display !== 'none';
+  if (isLogin) doLogin(); else doRegister();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin Login | Smart Vision AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#04080f; --card:#0a1525; --accent:#00dc82; --accent2:#00b4ff;
+  --danger:#ff4560; --text:#dff0e8; --dim:#4a6a58; --mono:'JetBrains Mono',monospace; --sans:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg); font-family:var(--sans); color:var(--text);
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+}
+body::before{
+  content:''; position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(0,220,130,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,220,130,.03) 1px,transparent 1px);
+  background-size:44px 44px; pointer-events:none;
+}
+body::after{
+  content:''; position:fixed; inset:0;
+  background:radial-gradient(ellipse 60% 60% at 50% 0%, rgba(0,220,130,.07) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.box{
+  position:relative; z-index:1;
+  width:100%; max-width:400px;
+}
+
+/* ── LOGO ── */
+.logo{text-align:center;margin-bottom:32px;}
+.orb-wrap{
+  width:72px;height:72px;border-radius:20px;margin:0 auto 14px;
+  background:linear-gradient(135deg,#00dc82,#00b4ff);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:18px;font-weight:700;color:#04080f;
+  box-shadow:0 0 40px rgba(0,220,130,.4);
+  animation:pulse 3s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(0,220,130,.4);}50%{box-shadow:0 0 70px rgba(0,220,130,.7);}}
+.logo h1{font-size:22px;font-weight:800;letter-spacing:-.5px;}
+.logo h1 span{
+  background:linear-gradient(90deg,#00dc82,#00b4ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.logo p{font-size:10px;font-family:var(--mono);color:var(--dim);letter-spacing:2.5px;margin-top:4px;}
+
+/* ── CARD ── */
+.card{
+  background:rgba(10,21,37,.9);
+  border:1px solid rgba(0,220,130,.18);
+  border-radius:24px; padding:30px 28px;
+  backdrop-filter:blur(20px);
+  box-shadow:0 24px 60px rgba(0,0,0,.5);
+}
+
+/* ── SHIELD BADGE ── */
+.shield-badge{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(0,180,255,.08);border:1px solid rgba(0,180,255,.2);
+  border-radius:20px;padding:7px 14px;margin-bottom:24px;
+  font-family:var(--mono);font-size:11px;color:var(--accent2);letter-spacing:.5px;
+}
+
+/* ── FIELD ── */
+.field{margin-bottom:16px;}
+.field label{
+  display:block;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--dim);margin-bottom:6px;
+}
+.field input{
+  width:100%;padding:11px 14px;
+  background:rgba(0,0,0,.3);border:1px solid rgba(0,220,130,.15);
+  border-radius:12px;color:var(--text);font-family:var(--mono);font-size:14px;
+  outline:none;transition:.15s;
+}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,220,130,.1);}
+.field input::placeholder{color:var(--dim);}
+
+/* ── BUTTON ── */
+.btn-login{
+  width:100%;padding:13px;margin-top:6px;
+  background:linear-gradient(135deg,#00dc82,#00b4ff);
+  border:none;border-radius:14px;
+  color:#04080f;font-family:var(--sans);font-size:14px;font-weight:800;
+  cursor:pointer;letter-spacing:.3px;transition:.15s;
+}
+.btn-login:hover{opacity:.9;transform:translateY(-1px);}
+.btn-login:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* ── MESSAGES ── */
+.msg{
+  border-radius:12px;padding:10px 14px;font-size:12px;font-family:var(--mono);
+  margin-bottom:16px;display:none;line-height:1.5;
+}
+.msg.show{display:block;}
+.msg.err{background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.25);color:#ff8fa3;}
+.msg.ok{background:rgba(0,220,130,.08);border:1px solid rgba(0,220,130,.25);color:var(--accent);}
+
+/* ── BACK LINK ── */
+.back-link{
+  text-align:center;margin-top:18px;
+  font-family:var(--mono);font-size:11px;color:var(--dim);
+}
+.back-link a{color:var(--accent2);text-decoration:none;}
+.back-link a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">
+    <div class="orb-wrap">SV</div>
+    <h1>Smart Vision <span>Admin</span></h1>
+    <p>SECURE CONTROL ACCESS</p>
+  </div>
+
+  <div class="card">
+    <div class="shield-badge">🛡️ ADMIN AUTHENTICATION REQUIRED</div>
+    <div class="msg err" id="msgErr"></div>
+    <div class="msg ok"  id="msgOk"></div>
+
+    <div class="field">
+      <label>Admin ID or Username</label>
+      <input type="text" id="adminId" placeholder="admin_user_id" autocomplete="username"/>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="adminPw" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <button class="btn-login" id="loginBtn" onclick="doLogin()">→ Access Dashboard</button>
+  </div>
+
+  <div class="back-link">← <a href="/">Back to main app</a></div>
+</div>
+
+<script>
+const API = window.location.origin;
+if (localStorage.getItem('admin_token')) window.location.href = '/admin/dashboard';
+
+function showErr(m){ const e=document.getElementById('msgErr'); e.textContent=m; e.className='msg err show'; document.getElementById('msgOk').className='msg ok'; }
+function showOk(m) { const e=document.getElementById('msgOk');  e.textContent=m; e.className='msg ok show';  document.getElementById('msgErr').className='msg err'; }
+
+async function doLogin(){
+  const identifier = document.getElementById('adminId').value.trim();
+  const password   = document.getElementById('adminPw').value;
+  if(!identifier||!password){ showErr('Please fill in all fields.'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled=true; btn.textContent='Authenticating…';
+  try{
+    const r = await fetch(API+'/admin/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({identifier, password})
+    });
+    const d = await r.json();
+    if(d.ok){
+      localStorage.setItem('admin_token', d.token);
+      localStorage.setItem('admin_username', d.username);
+      showOk('Access granted. Redirecting…');
+      setTimeout(()=>window.location.href='/admin/dashboard', 700);
+    } else {
+      showErr(d.error || 'Authentication failed.');
+    }
+  } catch { showErr('Cannot connect to server. Is Flask running?'); }
+  btn.disabled=false; btn.textContent='→ Access Dashboard';
+}
+
+document.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>

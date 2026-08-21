@@ -1,0 +1,33 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Secrets
+.env
+*.pem
+*.key
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Build output
+build/
+dist/
+
+# PyInstaller
+*.spec
+
+# Logs and local data
+*.log
+feedback_log.jsonl
+
+# Files not currently used
+backend/detection_fixed.py
+backend/yolov8n.pt
+yolov8n.pt
+
+# IDE
+.vscode/
+.idea/
